@@ -28,6 +28,8 @@ while connected == 0:
 		connected = 1
 	except socket.gaierror:
 		print('Invalid data entered, try again.')
+	except ConnectionRefusedError:
+		print('Invalid data entered, try again.')
 print(f'Successful connection. Host: {addr[0]}, port: {addr[1]}')
 while True:
 	msg = input()

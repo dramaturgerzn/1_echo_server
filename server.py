@@ -2,17 +2,33 @@ import socket
 import datetime as dt
 import sys
 
+logs = open('logs.txt', 'a')
 sock = socket.socket()
-sock.bind(('', 9090))
+correct_port = 0
+port = 9090
+while correct_port == 0:
+	try:
+		sock.bind(('', port))
+		print(f'Listening to port {port}')
+		logs.write(f'{dt.datetime.now()} - Listening to port {port}' + '\n')
+		correct_port = 1
+	except socket.error as e:
+		if e.errno == errno.EADDRINUSE:
+			print(f'Port {port} is already in use')
+			logs.write(f'{dt.datetime.now()} - Port {port} is already in use' + '\n')
+		else:
+			print(e)
+			logs.write(f'{dt.datetime.now()} - {e}')
+		port += 1
+	
 sock.listen(1)
 sock.settimeout(30)
 
-logs = open('logs.txt', 'a')
 print('Waiting for connection. 30 sec to join...')
 logs.write(f'{dt.datetime.now()} - Waiting for connection...' + '\n')
 try:
 	conn, addr = sock.accept()
-except TimeoutError:
+except socket.timeout:
 	logs.write(f'{dt.datetime.now()} - Сonnection timeout expired.' + '\n')
 	logs.close()
 	print(f'Сonnection timeout expired.')
@@ -34,7 +50,7 @@ while True:
 		logs.write(f'{dt.datetime.now()} - Connection lost. Waiting for connection...' + '\n')
 		try:
 			conn, addr = sock.accept()
-		except TimeoutError:
+		except socket.timeout:
 			logs.write(f'{dt.datetime.now()} - Сonnection timeout expired.' + '\n')
 			logs.close()
 			print(f'Сonnection timeout expired.')

@@ -1,7 +1,14 @@
 import socket
 import datetime as dt
 import sys
+import json
 
+
+with open('auth.json', 'w+', encoding='utf-8') as f_auth:
+	try:
+		auth = json.load(f_auth)
+	except json.decoder.JSONDecodeError:
+		auth = {}
 logs = open('logs.txt', 'a')
 sock = socket.socket()
 correct_port = 0
@@ -30,7 +37,18 @@ except socket.timeout:
     print(f'Сonnection timeout expired.')
     sys.exit()
 print(f'Connection is set. Addres is {addr}')
-logs.write(f'{dt.datetime.now()} - Connecton is set. Addres is: {addr}' + '\n')
+logs.write(f'{dt.datetime.now()} - Connecton is set. Addres is: {addr}.' + '\n')
+
+if not(addr[0] in auth):
+	intro = 'Glad to see you! Please, enter your Name'
+	conn.send(intro.encode())
+	name = conn.recv(1024)
+	auth[addr[0]] = name.decode()
+	logs.write(f'{dt.datetime.now()} - User {name.decode()} successfully registred.' + '\n')
+hello = 'Good afternoon, ' + auth[addr[0]]
+conn.send(hello.encode())
+logs.write(f'{dt.datetime.now()} - User {auth[addr[0]]} logged in.' + '\n')
+
 while True:
     data = conn.recv(1024)
         #if not data:
@@ -49,10 +67,13 @@ while True:
         except socket.timeout:
             logs.write(f'{dt.datetime.now()} - Сonnection timeout expired.' + '\n')
             logs.close()
+            json.dump(auth, f_auth, indent='\t')
             print(f'Сonnection timeout expired.')
             sys.exit()
         print(f'Connecton is set. Addres is: {addr}')
         logs.write(f'{dt.datetime.now()} - Connection is set. Addres is: {addr}' + '\n')
 
 conn.close()
+json.dump(auth, f_auth, indent='\t')
+f_auth.close()
 logs.close()

@@ -31,6 +31,10 @@ while connected == 0:
     except ConnectionRefusedError:
         print('Invalid data entered, try again.')
 print(f'Successful connection. Host: {addr[0]}, port: {addr[1]}')
+
+print(sock.recv(1024).decode())
+name = input('Enter your name: ')
+sock.send(name.encode())
 while True:
     msg = input()
     if msg == 'exit':

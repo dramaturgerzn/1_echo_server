@@ -32,9 +32,14 @@ while connected == 0:
         print('Invalid data entered, try again.')
 print(f'Successful connection. Host: {addr[0]}, port: {addr[1]}')
 
-print(sock.recv(1024).decode())
-name = input('Enter your name: ')
-sock.send(name.encode())
+data = sock.recv(1024).decode()
+print(data)
+if 'Glad to see you!' in data:
+    name = input('Enter your name: ')
+    sock.send(name.encode())
+    data = sock.recv(1024).decode()
+    print(data)
+
 while True:
     msg = input()
     if msg == 'exit':

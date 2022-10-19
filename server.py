@@ -3,13 +3,18 @@ import datetime as dt
 import sys
 import json
 
-
-f_auth = open('auth.json', 'r+', encoding='utf-8')
 try:
+	f_auth = open('auth.json', 'r+', encoding='utf-8')
 	auth = json.load(f_auth)
+	f_auth = open('auth.json', 'w+', encoding='utf-8')
 except json.decoder.JSONDecodeError:
 	auth = {}
-print(auth)
+
+except FileNotFoundError:
+	f_auth = open('auth.json', 'w+', encoding='utf-8')
+	auth = {}
+
+	
 logs = open('logs.txt', 'a')
 sock = socket.socket()
 correct_port = 0

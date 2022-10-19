@@ -40,6 +40,8 @@ if 'Glad to see you!' in data:
     data = sock.recv(1024).decode()
     print(data)
 
+print('START CHATTING! IF YOU WANT TO END THE CHAT, SEND MESSAGE: `exit`')
+
 while True:
     msg = input()
     if msg == 'exit':
